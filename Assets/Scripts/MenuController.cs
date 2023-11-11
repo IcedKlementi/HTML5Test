@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -21,10 +20,10 @@ public class MenuController : MonoBehaviour
     [SerializeField] private Transform receiptParent;
     [SerializeField] private GameObject receiptView;
 
-    [SerializeField] private List<MenuItem> _menuItems;
-    private List<GameObject> _menuObjects = new();
-    private List<GameObject> _receiptObjects = new();
-    private Dictionary<int, Dictionary<int, int>> _tableData = new();
+    [SerializeField] private List<MenuItem> menuItems;
+    private readonly List<GameObject> _menuObjects = new();
+    private readonly List<GameObject> _receiptObjects = new();
+    private readonly Dictionary<int, Dictionary<int, int>> _tableData = new();
 
     [Serializable]
     private struct MenuItem
@@ -33,7 +32,7 @@ public class MenuController : MonoBehaviour
         public string itemName;
     }
 
-    private async void Start()
+    private void Start()
     {
         //_menuItems = await ReadData();
         SpawnMenuObjects();
@@ -42,7 +41,7 @@ public class MenuController : MonoBehaviour
 
     private static async Task<List<MenuItem>> ReadData()
     {
-        var filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "MenuItems.json");
+        var filePath = Path.Combine(Application.streamingAssetsPath, "MenuItems.json");
 
         string json;
         if (filePath.Contains("://") || filePath.Contains(":///"))
@@ -62,7 +61,7 @@ public class MenuController : MonoBehaviour
 
     private void SpawnMenuObjects()
     {
-        foreach (var item in _menuItems)
+        foreach (var item in menuItems)
         {
             var menuObject = Instantiate(menuItemPrefab, menuParent);
             _menuObjects.Add(menuObject);
@@ -126,7 +125,7 @@ public class MenuController : MonoBehaviour
             var receiptObject = Instantiate(receiptItemPrefab, receiptParent);
             _receiptObjects.Add(receiptObject);
             receiptObject.GetComponent<ReceiptItemController>()
-                .Setup(_menuItems.Find(x => x.itemId == itemQuantity.Key).itemName, itemQuantity.Value);
+                .Setup(menuItems.Find(x => x.itemId == itemQuantity.Key).itemName, itemQuantity.Value);
         }
     }
 
